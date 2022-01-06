@@ -1,0 +1,27 @@
+type Tag @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  posts: [TagPost] @connection(keyName: "byTag", fields: ["id"])
+}
+
+type Blog @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  posts: [Post] @connection(keyName: "byBlog", fields: ["id"])
+}
+
+type Post @model @key(name: "byBlog", fields: ["blogID"]) @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  blogID: ID!
+  body: String!
+  tags: [TagPost] @connection(keyName: "byPost", fields: ["id"])
+}
+
+type TagPost @model(queries: null) @key(name: "byTag", fields: ["tagID", "postID"]) @key(name: "byPost", fields: ["postID", "tagID"]) @auth(rules: [{allow: public}, {allow: public}]) {
+  id: ID!
+  tagID: ID!
+  postID: ID!
+  tag: Tag! @connection(fields: ["tagID"])
+  post: Post! @connection(fields: ["postID"])
+}
